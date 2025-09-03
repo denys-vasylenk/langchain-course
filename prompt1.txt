@@ -1,0 +1,5 @@
+Given the information about the person I want you to create:
+1. A short summary
+2. Two interesting facts about them
+
+Infromation: {client_input}
