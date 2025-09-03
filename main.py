@@ -5,6 +5,15 @@ from langchain_ollama import ChatOllama
 
 load_dotenv()
 
+def calc_tokens_OpenAI(metadata, input_price_per1K, output_price_per1K):
+  input_price = input_price_per1K * (metadata["token_usage"]['prompt_tokens'] / 1000)
+  output_price = output_price_per1K * (metadata["token_usage"]['completion_tokens'] / 1000)
+  return print(f"Input token price: {input_price} $\nOutput token price:{output_price} $\nTotal:             {input_price+output_price} $")
+
+def calc_tokens_llama(metadata, input_price_per1K, output_price_per1K):
+  input_price = input_price_per1K * (metadata["prompt_eval_count"] / 1000)
+  output_price = output_price_per1K * (metadata["eval_count"] / 1000)
+  return print(f"Input token price: {round(input_price,7)} $\nOutput token price:{round(output_price,7)} $\nTotal:             {round(input_price+output_price,7)} $")
 
 def main():
     print("langchain course")
@@ -35,21 +44,28 @@ def main():
     )
 
 
-    temp = 0.7
-    # models = [ "gpt-3.5-turbo", "gemma3:270m"]
-    model = 'gemma3:270m'
+    temp = 0.2
+    models = [ "gpt-3.5-turbo", "gemma3:270m"]
+    model = models[1]
+    input_token_price_per1K = 0.0015
+    output_token_price_per1K = 0.002
 
 
     if "gpt-" in model:
         llm = ChatOpenAI(temperature=temp, model=model)
+        token_calc = calc_tokens_OpenAI
     else:
         llm = ChatOllama(temperature=temp, model=model)
+        token_calc = calc_tokens_llama
     
-    
+            
     chain = summary_prompt_template | llm
 
     response = chain.invoke(input ={"client_input":client_input})
-    print(response.content)
+    print(f"Output:\n{response.content}")
+    print("Price:")
+    print(token_calc(response.response_metadata, input_token_price_per1K, output_token_price_per1K))
+    # print(response.response_metadata)
 
 
 if __name__ == "__main__":
