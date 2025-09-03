@@ -8,12 +8,14 @@ load_dotenv()
 def calc_tokens_OpenAI(metadata, input_price_per1K, output_price_per1K):
   input_price = input_price_per1K * (metadata["token_usage"]['prompt_tokens'] / 1000)
   output_price = output_price_per1K * (metadata["token_usage"]['completion_tokens'] / 1000)
-  return print(f"Input token price: {input_price} $\nOutput token price:{output_price} $\nTotal:             {input_price+output_price} $")
+  print(f"Input token price: {input_price} $\nOutput token price:{output_price} $\nTotal:             {input_price+output_price} $")
 
 def calc_tokens_llama(metadata, input_price_per1K, output_price_per1K):
   input_price = input_price_per1K * (metadata["prompt_eval_count"] / 1000)
   output_price = output_price_per1K * (metadata["eval_count"] / 1000)
-  return print(f"Input token price: {round(input_price,7)} $\nOutput token price:{round(output_price,7)} $\nTotal:             {round(input_price+output_price,7)} $")
+  print(f"Input token price: {round(input_price,7)} $\nOutput token price:{round(output_price,7)} $\nTotal:             {round(input_price+output_price,7)} $")
+
+
 
 def main():
     print("langchain course")
@@ -33,10 +35,12 @@ def main():
     # Infromation: {information}
     # """
 
-    with open("/Users/me/Desktop/langchain-course/client_input.txt", "r", encoding="utf-8") as f:
+    client_input_path = "/Users/me/Desktop/langchain-course/client_input.txt"
+    with open(client_input_path, "r", encoding="utf-8") as f:
         client_input = f.read()
 
-    with open("/Users/me/Desktop/langchain-course/prompt1.txt", "r", encoding="utf-8") as f:
+    prompt_path = "/Users/me/Desktop/langchain-course/prompt1.txt"
+    with open(prompt_path, "r", encoding="utf-8") as f:
         prompt1 = f.read()
 
     summary_prompt_template = PromptTemplate(
@@ -54,7 +58,7 @@ def main():
     if "gpt-" in model:
         llm = ChatOpenAI(temperature=temp, model=model)
         token_calc = calc_tokens_OpenAI
-    else:
+    elif ":" in model:
         llm = ChatOllama(temperature=temp, model=model)
         token_calc = calc_tokens_llama
     
@@ -64,8 +68,7 @@ def main():
     response = chain.invoke(input ={"client_input":client_input})
     print(f"Output:\n{response.content}")
     print("Price:")
-    print(token_calc(response.response_metadata, input_token_price_per1K, output_token_price_per1K))
-    # print(response.response_metadata)
+    token_calc(response.response_metadata, input_token_price_per1K, output_token_price_per1K)
 
 
 if __name__ == "__main__":
