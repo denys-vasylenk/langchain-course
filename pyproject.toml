@@ -1,0 +1,17 @@
+[project]
+name = "langchain-3-doc-assistance"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "certifi>=2025.10.5",
+    "langchain>=0.3.7",
+    "langchain-core>=0.3.34,<1.0.0",
+    "langchain-openai>=0.2.11",
+    "langchain-pinecone>=0.2.12",
+    "langchain-tavily>=0.2.12",
+    "langchain-text-splitters>=0.3.1",
+    "python-dotenv>=1.0.1",
+    "streamlit>=1.51.0",
+]
